@@ -1,0 +1,57 @@
+# Build
+/build/
+/build-*/
+cmake-build-*/
+/out/
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+.ninja_deps
+.ninja_log
+build.ninja
+
+# Compiled files
+*.o
+*.obj
+*.a
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.out
+*.app
+
+# Debug symbols
+*.dSYM/
+*.pdb
+*.ilk
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Nix
+result
+result-*
+
+# Runtime
+*.pid
+*.sock
+core
+core.*
+
+# Logs
+*.log
+
+# Temporary files
+.tmp/
+.cache/
+.DS_Store
+Thumbs.db

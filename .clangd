@@ -1,0 +1,51 @@
+CompileFlags:
+  Add:
+    - -std=c++20
+    - -isystem/nix/store/r41icz95c9q44fznzaq079b7n179va13-gdb-17.1/include
+    - -isystem/nix/store/nv8x7438mp3gdd0wdpnc18nm57jxmwah-gtk4-4.22.4-dev/include
+    - -isystem/nix/store/rjadd507fdm0mxb5gy8xbygnszg22mg8-cairo-1.18.4-dev/include
+    - -isystem/nix/store/kbhcqcysbclabk7vwmbn2ffi1xnnxbxi-fontconfig-2.17.1-dev/include
+    - -isystem/nix/store/xxvp72sjvk902yd2z59gw3fmg6z4rcbm-freetype-2.14.2-dev/include
+    - -isystem/nix/store/h7ik0g1xxayy0z8h27zbvrgmac63irgs-zlib-1.3.2-dev/include
+    - -isystem/nix/store/1c21gkkskq662x2xw6dbqflkjr2xp946-bzip2-1.0.8-dev/include
+    - -isystem/nix/store/3r1z17iah1fb7qncbpjcy3bm6mh4idbw-brotli-1.2.0-dev/include
+    - -isystem/nix/store/qd3gla6sn63is90462qdfqwsvppkrhby-libpng-apng-1.6.56-dev/include
+    - -isystem/nix/store/hm1ms40h2srvff9kznnj9rj40cc6qcax-pixman-0.46.4/include
+    - -isystem/nix/store/nzgfvz491qhgx0dwj0pm7ajy58pcnpml-libxext-1.3.7-dev/include
+    - -isystem/nix/store/h11h9pq0d23c8n2k0pd162mgzg1z4jca-xorgproto-2025.1/include
+    - -isystem/nix/store/3wwd9vqjrs1ak4dg1vqaa9p52c91d2g6-libxau-1.0.12-dev/include
+    - -isystem/nix/store/dbffnayyadn311f7027iyw4lsbywgcvd-libxrender-0.9.12-dev/include
+    - -isystem/nix/store/1rhchilgcirwrwmq4h8xqldkn8lx209x-libx11-1.8.13-dev/include
+    - -isystem/nix/store/6fbkwxv11i13lsgq8w1lzlaxm4c2a90b-libxcb-1.17.0-dev/include
+    - -isystem/nix/store/q9ksx8c79jfj1cawwwzmpq3qapvpvab7-glib-2.88.1-dev/include
+    - -isystem/nix/store/aj7zqrfxvg96ldyph7fly6qgprcm2krv-libffi-3.5.2-dev/include
+    - -isystem/nix/store/rb8rna9gkhs0ybl6z2p904myslh8llg8-gettext-1.0/include
+    - -isystem/nix/store/lmhbvfwrg837bkq46ild4rngand4mhn5-glibc-iconv-2.42/include
+    - -isystem/nix/store/s8666p9giz8ckcvc5jf9nch0cwlybw4n-gdk-pixbuf-2.44.6-dev/include
+    - -isystem/nix/store/xlfg33vwfqrybcxicqsph52ssbrcz9zs-libtiff-4.7.1-dev/include
+    - -isystem/nix/store/61jvh6afdc5l8c4m7zkpim1nbk5wwwjs-libjpeg-turbo-3.1.4-dev/include
+    - -isystem/nix/store/521f8i5l1dfn91ggqvpkpbsymjrp2g8m-graphene-1.10.8-dev/include
+    - -isystem/nix/store/nz7v24xpw0zrw0k2lq5mql6zvpv9hcif-pango-1.57.1-dev/include
+    - -isystem/nix/store/fkkiw87rdlmw7dzqbnn908gkzp3ix6md-harfbuzz-13.2.1-dev/include
+    - -isystem/nix/store/k4dzp550i6gwh718dmvsqihym6q78sqf-graphite2-1.3.14-dev/include
+    - -isystem/nix/store/bgdx7vags1klk9gkhh23czj6kv68vqcz-libxft-2.3.9-dev/include
+    - -isystem/nix/store/v3jm5z02mx668hx7gwd9kwxqxpfyd62i-wayland-1.25.0-dev/include
+    - -isystem/nix/store/k8a44404day9i86sxkjm0gq5ymlvyh06-gsettings-desktop-schemas-50.1/include
+    - -isystem/nix/store/crswdvxy6klldqxk2r56q930bzd2x48z-gtkmm-4.22.0-dev/include
+    - -isystem/nix/store/9wifkqy4pgv216gl239g6gn6zgryl7sy-glibmm-2.88.0-dev/include
+    - -isystem/nix/store/9z80nrc29cwhxz4iagq30mm9r1m8955i-libsigc++-3.6.0-dev/include
+    - -isystem/nix/store/l2aqwp9dgmkaiqfaszwx5kphraijayf2-cairomm-1.18.0-dev/include
+    - -isystem/nix/store/n0y7n56skjpnkrr35whq71bsmjvsdp9z-pangomm-2.56.1-dev/include
+    - -isystem/nix/store/hbpjynmlpmd4mga6cv85am8bgfnz4vyg-gtk4-layer-shell-1.3.0-dev/include
+    - -isystem/nix/store/fgq3g4mnlwdll7gmhd5gcgyx10103zxx-wayland-protocols-1.48/include
+    - -isystem/nix/store/0balwgpf53vhjycd97mq1bkmz45nc1ks-compiler-rt-libc-21.1.8-dev/include
+    - -isystem/nix/store/qxaq7jz61a6zkr2mq49i0zvqip2m2jj8-gcc-15.2.0/include/c++/15.2.0/
+    - -isystem/nix/store/qxaq7jz61a6zkr2mq49i0zvqip2m2jj8-gcc-15.2.0/include/c++/15.2.0//x86_64-unknown-linux-gnu
+    - -isystem/nix/store/qxaq7jz61a6zkr2mq49i0zvqip2m2jj8-gcc-15.2.0/include/c++/15.2.0//backward
+    - -isystem/nix/store/qxaq7jz61a6zkr2mq49i0zvqip2m2jj8-gcc-15.2.0/lib/gcc/x86_64-unknown-linux-gnu/15.2.0/include
+    - -isystem/nix/store/qxaq7jz61a6zkr2mq49i0zvqip2m2jj8-gcc-15.2.0/include
+    - -isystem/nix/store/qxaq7jz61a6zkr2mq49i0zvqip2m2jj8-gcc-15.2.0/lib/gcc/x86_64-unknown-linux-gnu/15.2.0/include-fixed
+    - -isystem/nix/store/15h9askp4k1lx44d9871wid23j2a8ijp-glibc-2.42-61-dev/include
+
+Diagnostics:
+  Suppress: [builtin_definition]

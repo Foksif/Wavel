@@ -1,0 +1,323 @@
+window.wavel-bar {
+    background: transparent;
+    color: #f2d6dc;
+    font-family: "JetBrainsMono Nerd Font", "Noto Sans", sans-serif;
+    font-size: 12px;
+}
+
+.left {
+    background: transparent;
+    padding-left: 6px;
+}
+
+.right {
+    background: transparent;
+    padding-right: 6px;
+}
+
+.module {
+    background: rgba(31, 31, 40, 0.88);
+    color: #f2d6dc;
+    border: 1px solid rgba(243, 166, 189, 0.10);
+    border-radius: 12px;
+    padding: 0 6px;
+    margin: 2px 2px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+    transition: border-color 200ms ease, background 200ms ease;
+}
+
+.module:hover {
+    border-color: rgba(243, 166, 189, 0.25);
+}
+
+/* Workspaces */
+
+.workspaces {
+    padding: 0 2px;
+}
+
+.workspaces button.workspace {
+    background: transparent;
+    color: #a07a86;
+    border: none;
+    box-shadow: none;
+    outline: none;
+    min-height: 0;
+    min-width: 0;
+    margin: 2px 1px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    transition: background 180ms ease, color 180ms ease;
+}
+
+.workspaces button.workspace:hover {
+    background: #3a1f2a;
+    color: #ff8fb3;
+}
+
+.workspaces button.workspace:active {
+    opacity: 0.7;
+}
+
+.workspaces button.workspace.active {
+    background: #f3a6bd;
+    color: #1f1f28;
+    font-weight: bold;
+    box-shadow: 0 0 6px rgba(243, 166, 189, 0.35);
+}
+
+.clock {
+    color: #e6b3a1;
+    font-weight: bold;
+    letter-spacing: 0.3px;
+}
+
+.title {
+    color: #d1a6c8;
+    font-weight: bold;
+}
+
+/* Battery */
+
+.battery {
+    color: #7fbf9b;
+    font-weight: 500;
+}
+
+.battery-icon {
+    font-family: "JetBrainsMono Nerd Font";
+    font-size: 13px;
+}
+
+.battery-percentage {
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    min-width: 26px;
+}
+
+.battery.low {
+    color: #ff8fb3;
+}
+
+/* Audio */
+
+.audio {
+    padding: 0 2px;
+}
+
+.audio-button {
+    background: transparent;
+    color: #f3a6bd;
+    border: none;
+    box-shadow: none;
+    outline: none;
+    margin: 2px 0;
+    padding: 1px 6px;
+    min-width: 0;
+    min-height: 0;
+    border-radius: 999px;
+    transition: background 180ms ease, opacity 180ms ease;
+}
+
+.audio-button:hover {
+    background: #3a1f2a;
+}
+
+.audio-button:active {
+    background: #3a1f2a;
+    opacity: 0.7;
+}
+
+.audio-button:focus-visible {
+    outline: 1px solid #f3a6bd;
+    outline-offset: -2px;
+}
+
+.audio-icon {
+    font-family: "JetBrainsMono Nerd Font";
+    font-size: 13px;
+    color: #f3a6bd;
+    transition: opacity 180ms ease;
+}
+
+.audio-volume {
+    color: #d1a6c8;
+    font-size: 11px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    min-width: 30px;
+    transition: opacity 180ms ease;
+}
+
+.audio-icon.muted,
+.audio-volume.muted {
+    opacity: 0.45;
+}
+
+/* Keyboard */
+
+.keyboard {
+    padding: 0 6px;
+}
+
+.keyboard-icon {
+    font-family: "JetBrainsMono Nerd Font";
+    font-size: 13px;
+    color: #f3a6bd;
+    margin-right: 4px;
+}
+
+.keyboard-layout {
+    color: #d1a6c8;
+    font-size: 11px;
+    font-weight: 500;
+    min-width: 20px;
+}
+
+/* Tray */
+
+.tray {
+    padding: 0 4px;
+}
+
+.tray-item {
+    padding: 2px 6px;
+    margin: 2px 1px;
+    border-radius: 999px;
+    transition: background 180ms ease;
+}
+
+.tray-item:hover {
+    background: #3a1f2a;
+}
+
+.tray-item.attention {
+    background: rgba(243, 166, 189, 0.18);
+}
+
+popover.menu > contents {
+    background: rgba(31, 31, 40, 0.96);
+    border: 1px solid rgba(243, 166, 189, 0.20);
+    border-radius: 12px;
+    padding: 4px;
+}
+
+popover.menu modelbutton {
+    color: #f2d6dc;
+    font-size: 12px;
+    min-height: 0;
+    padding: 4px 10px;
+    border-radius: 8px;
+}
+
+popover.menu modelbutton:hover {
+    background: #3a1f2a;
+    color: #ff8fb3;
+}
+
+popover.menu modelbutton:disabled {
+    opacity: 0.4;
+}
+
+popover.menu separator {
+    background: rgba(243, 166, 189, 0.15);
+    margin: 3px 4px;
+}
+
+tooltip {
+    background: rgba(31, 31, 40, 0.96);
+    border: 1px solid rgba(243, 166, 189, 0.20);
+    border-radius: 10px;
+}
+
+tooltip label {
+    color: #f2d6dc;
+    font-size: 11px;
+    padding: 2px 6px;
+}
+
+/* Island */
+
+
+window.wavel-island {
+  background: transparent;
+  font-family: "JetBrainsMono Nerd Font", "Noto Sans", sans-serif;
+}
+
+.island-clock {
+  color: #e6b3a1;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 0.3px;
+}
+
+.island-cover {
+  background: #3a1f2a;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.island-cover-big {
+  border-radius: 14px;
+}
+
+.island-compact-text {
+  color: #f2d6dc;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.island-title {
+  color: #f2d6dc;
+  font-size: 16px;
+  font-weight: bold;
+}
+.island-artist {
+  color: #d1a6c8;
+  font-size: 13px;
+}
+
+.island-notif-icon {
+  color: #f3a6bd;
+}
+.island-notif-title {
+  color: #f2d6dc;
+  font-size: 14px;
+  font-weight: bold;
+}
+.island-notif-body {
+  color: #a07a86;
+  font-size: 12px;
+}
+
+.island-btn {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  padding: 0;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 999px;
+  color: #f3a6bd;
+  transition: background 180ms ease, opacity 180ms ease;
+}
+.island-btn:hover {
+  background: #3a1f2a;
+  color: #ff8fb3;
+}
+.island-btn:active {
+  opacity: 0.7;
+}
+.island-btn-main {
+  background: #f3a6bd;
+  color: #1f1f28;
+  box-shadow: 0 0 8px rgba(243, 166, 189, 0.35);
+}
+.island-btn-main:hover {
+  background: #ff8fb3;
+  color: #1f1f28;
+}
+.island-btn-icon {
+  font-family: "Symbols Nerd Font", "JetBrainsMono Nerd Font", monospace;
+  font-size: 20px;
+}

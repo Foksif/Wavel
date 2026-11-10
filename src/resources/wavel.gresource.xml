@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/io/github/foksif/wavel">
+    <file>wavel.css</file>
+  </gresource>
+</gresources>
