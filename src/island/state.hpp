@@ -27,7 +27,7 @@ inline Size size_for(State state) {
   case State::Notification:
     return {380.0f, 76.0f};
   case State::Full:
-    return {440.0f, 168.0f};
+    return {440.0f, 184.0f};
   case State::Expanded:
     return {kExpandedWidth, kExpandedHeight};
   }

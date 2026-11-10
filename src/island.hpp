@@ -8,7 +8,7 @@
 #include "island/spring.hpp"
 #include "island/state.hpp"
 #include "theme.hpp"
-
+#include <cstdio>
 #include <glib/gstdio.h>
 #include <gtk4-layer-shell.h>
 #include <gtkmm.h>
@@ -66,6 +66,8 @@ public:
     leave_timer_.disconnect();
     notif_timer_.disconnect();
     clock_timer_.disconnect();
+    pos_timer_.disconnect();
+    seek_timer_.disconnect();
   }
 
 private:
@@ -95,7 +97,10 @@ private:
   static constexpr const char *kNext = "\U000F04AD";
   static constexpr const char *kPlay = "\U000F040A";
   static constexpr const char *kPause = "\U000F03E4";
-  static constexpr const char *kExpand = "\U000F0140"; // chevron-down
+  static constexpr const char *kExpand = "\U000F0140";    // chevron-down
+  static constexpr const char *kShuffle = "\U000F049F";   // shuffle-variant
+  static constexpr const char *kRepeat = "\U000F0456";    // repeat
+  static constexpr const char *kRepeatOne = "\U000F0458"; // repeat-once
 
   void setup_layer_shell(GdkMonitor *monitor) {
     GtkWindow *gw = GTK_WINDOW(gobj());
@@ -246,8 +251,8 @@ private:
     auto *inner = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::HORIZONTAL, 18);
     inner->set_margin_start(22);
     inner->set_margin_end(22);
-    inner->set_margin_top(22);
-    inner->set_margin_bottom(22);
+    inner->set_margin_top(18);
+    inner->set_margin_bottom(18);
 
     cover_big_ = make_cover(kBigCover, "island-cover-big");
 
@@ -265,23 +270,64 @@ private:
     full_artist_->set_ellipsize(Pango::EllipsizeMode::END);
     full_artist_->set_max_width_chars(24);
 
+    auto *seek_row =
+        Gtk::make_managed<Gtk::Box>(Gtk::Orientation::HORIZONTAL, 8);
+    seek_row->set_margin_top(8);
+
+    time_pos_ = make_label("0:00", "island-time");
+    time_pos_->set_xalign(0.0f);
+    time_pos_->set_width_chars(4);
+
+    seek_bar_ = Gtk::make_managed<Gtk::Scale>(Gtk::Orientation::HORIZONTAL);
+    seek_bar_->set_range(0.0, 1.0);
+    seek_bar_->set_draw_value(false);
+    seek_bar_->set_hexpand(true);
+    seek_bar_->set_valign(Gtk::Align::CENTER);
+    seek_bar_->add_css_class("island-seek");
+    seek_bar_->signal_change_value().connect(
+        sigc::mem_fun(*this, &IslandWindow::on_seek_changed), false);
+
+    time_len_ = make_label("--:--", "island-time");
+    time_len_->set_xalign(1.0f);
+    time_len_->set_width_chars(4);
+
+    seek_row->append(*time_pos_);
+    seek_row->append(*seek_bar_);
+    seek_row->append(*time_len_);
+
+    // Управление
     auto *controls =
-        Gtk::make_managed<Gtk::Box>(Gtk::Orientation::HORIZONTAL, 6);
-    controls->set_margin_top(12);
-    controls->set_halign(Gtk::Align::START);
+        Gtk::make_managed<Gtk::Box>(Gtk::Orientation::HORIZONTAL, 2);
+    controls->set_margin_top(4);
+
+    shuffle_btn_ = make_button(kShuffle, [this] { mpris_.toggle_shuffle(); });
+    shuffle_btn_->add_css_class("island-btn-toggle");
+    shuffle_btn_->set_tooltip_text("Перемешать");
+
+    loop_btn_ = make_button(
+        kRepeat, [this] { mpris_.cycle_loop(); }, false, &loop_icon_);
+    loop_btn_->add_css_class("island-btn-toggle");
+    loop_btn_->set_tooltip_text("Повтор: выкл / плейлист / трек");
+
+    auto *spacer = Gtk::make_managed<Gtk::Box>();
+    spacer->set_hexpand(true);
+
+    auto *expand =
+        make_button(kExpand, [this] { set_state(island::State::Expanded); });
+    expand->set_tooltip_text("Развернуть");
+
+    controls->append(*shuffle_btn_);
     controls->append(*make_button(kPrev, [this] { mpris_.previous(); }));
     controls->append(*make_button(
         kPlay, [this] { mpris_.play_pause(); }, true, &play_icon_));
     controls->append(*make_button(kNext, [this] { mpris_.next(); }));
-
-    auto *expand =
-        make_button(kExpand, [this] { set_state(island::State::Expanded); });
-    expand->set_margin_start(10);
-    expand->set_tooltip_text("Развернуть");
+    controls->append(*loop_btn_);
+    controls->append(*spacer);
     controls->append(*expand);
 
     col->append(*full_title_);
     col->append(*full_artist_);
+    col->append(*seek_row);
     col->append(*controls);
 
     inner->append(*cover_big_);
@@ -342,7 +388,7 @@ private:
 
     auto click = Gtk::GestureClick::create();
     click->signal_pressed().connect(
-        [this](int, double, double) { on_click(); });
+        [this](int, double x, double y) { on_click(x, y); });
     overlay_.add_controller(click);
   }
 
@@ -370,6 +416,37 @@ private:
           return false;
         },
         500);
+  }
+
+  bool is_interactive_at(double x, double y) {
+    GtkWidget *w =
+        gtk_widget_pick(GTK_WIDGET(overlay_.gobj()), x, y, GTK_PICK_DEFAULT);
+    for (; w && w != GTK_WIDGET(overlay_.gobj()); w = gtk_widget_get_parent(w))
+      if (GTK_IS_BUTTON(w) || GTK_IS_RANGE(w))
+        return true;
+    return false;
+  }
+
+  void on_click(double x, double y) {
+    if (is_interactive_at(x, y))
+      return;
+
+    notif_timer_.disconnect();
+
+    switch (state_) {
+    case island::State::Idle:
+      set_state(island::State::Expanded);
+      break;
+    case island::State::Music:
+      set_state(island::State::Full);
+      break;
+    case island::State::Full:
+    case island::State::Notification:
+      set_state(base_state());
+      break;
+    case island::State::Expanded:
+      break;
+    }
   }
 
   void on_click() {
@@ -410,6 +487,10 @@ private:
       expanded_->refresh();
 
     content_.set_visible_child(page_name(s));
+    if (s == island::State::Full)
+      start_position_updates();
+    else
+      stop_position_updates();
     start_animation();
   }
 
@@ -417,9 +498,92 @@ private:
     refresh_media();
     if (state_ == island::State::Idle || state_ == island::State::Music)
       set_state(base_state());
+    if (state_ == island::State::Full)
+      mpris_.request_position();
   }
 
   void on_theme_changed() { area_.queue_draw(); }
+
+  static std::string fmt_time(gint64 us) {
+    const gint64 total = std::max<gint64>(us, 0) / 1000000;
+    const int h = static_cast<int>(total / 3600);
+    const int m = static_cast<int>(total / 60 % 60);
+    const int s = static_cast<int>(total % 60);
+    char buf[32];
+    if (h > 0)
+      std::snprintf(buf, sizeof buf, "%d:%02d:%02d", h, m, s);
+    else
+      std::snprintf(buf, sizeof buf, "%d:%02d", m, s);
+    return buf;
+  }
+
+  static void set_active(Gtk::Widget *w, bool on) {
+    if (on)
+      w->add_css_class("active");
+    else
+      w->remove_css_class("active");
+  }
+
+  // Пользователь тянет ползунок. Саму перемотку откладываем на 80 мс,
+  // чтобы при перетаскивании не заваливать плеер запросами
+  bool on_seek_changed(Gtk::ScrollType, double value) {
+    const MediaInfo *m = mpris_.current();
+    if (!m || m->length_us <= 0)
+      return true;
+
+    value = std::clamp(value, 0.0, 1.0);
+    seek_bar_->set_value(value);
+
+    pending_seek_us_ = static_cast<gint64>(value * m->length_us);
+    scrub_until_ =
+        g_get_monotonic_time() + 700000; // таймер не дёргает ползунок
+    time_pos_->set_text(fmt_time(pending_seek_us_));
+
+    seek_timer_.disconnect();
+    seek_timer_ = Glib::signal_timeout().connect(
+        [this] {
+          mpris_.seek_to(pending_seek_us_);
+          return false;
+        },
+        80);
+    return true;
+  }
+
+  void update_progress() {
+    const MediaInfo *m = mpris_.current();
+    const gint64 len = m ? m->length_us : 0;
+    const bool seekable = len > 0;
+
+    seek_bar_->set_sensitive(seekable);
+    time_len_->set_text(seekable ? fmt_time(len) : "--:--");
+
+    if (g_get_monotonic_time() < scrub_until_)
+      return; // пользователь сейчас перематывает
+
+    const gint64 pos = mpris_.position_now();
+    seek_bar_->set_value(seekable ? static_cast<double>(pos) / len : 0.0);
+    time_pos_->set_text(fmt_time(pos));
+  }
+
+  void start_position_updates() {
+    mpris_.request_position();
+    update_progress();
+
+    if (pos_timer_.connected())
+      return;
+
+    pos_ticks_ = 0;
+    pos_timer_ = Glib::signal_timeout().connect(
+        [this] {
+          if (++pos_ticks_ % 8 == 0)
+            mpris_.request_position(); // сверяемся с плеером раз в 2 с
+          update_progress();
+          return true;
+        },
+        250);
+  }
+
+  void stop_position_updates() { pos_timer_.disconnect(); }
 
   void on_notification(const Notification &n) {
     if (state_ == island::State::Full || state_ == island::State::Expanded)
@@ -470,7 +634,10 @@ private:
     full_title_->set_text(title);
     full_artist_->set_text(artist);
     play_icon_->set_text(playing ? kPause : kPlay);
-
+    loop_icon_->set_text(m && m->loop == "Track" ? kRepeatOne : kRepeat);
+    set_active(loop_btn_, m && m->loop != "None");
+    set_active(shuffle_btn_, m && m->shuffle);
+    update_progress();
     load_cover(art);
   }
 
@@ -802,6 +969,18 @@ private:
   Gtk::Image *notif_icon_ = nullptr;
   Gtk::Picture *cover_small_ = nullptr;
   Gtk::Picture *cover_big_ = nullptr;
+  Gtk::Scale *seek_bar_ = nullptr;
+  Gtk::Label *time_pos_ = nullptr;
+  Gtk::Label *time_len_ = nullptr;
+  Gtk::Label *loop_icon_ = nullptr;
+  Gtk::Button *loop_btn_ = nullptr;
+  Gtk::Button *shuffle_btn_ = nullptr;
+
+  sigc::connection pos_timer_;
+  sigc::connection seek_timer_;
+  gint64 pending_seek_us_ = 0;
+  gint64 scrub_until_ = 0;
+  int pos_ticks_ = 0;
 
   island::Spring width_;
   island::Spring height_;

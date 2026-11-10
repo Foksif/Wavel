@@ -351,3 +351,44 @@ window.wavel-island {
 .island-theme-mark {
   font-family: "Symbols Nerd Font", "JetBrainsMono Nerd Font", monospace;
 }
+
+/* Player */
+
+.island-seek {
+  min-height: 14px;
+  padding: 0;
+}
+.island-seek trough {
+  min-height: 4px;
+  border-radius: 2px;
+  background: alpha(@wv_fg, 0.18);
+}
+.island-seek highlight {
+  min-height: 4px;
+  border-radius: 2px;
+  background: @wv_accent;
+}
+.island-seek slider {
+  min-width: 10px;
+  min-height: 10px;
+  margin: -4px;
+  border-radius: 50%;
+  background: @wv_accent_hover;
+  box-shadow: none;
+  border: none;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+.island-seek:hover slider,
+.island-seek:active slider { opacity: 1; }
+
+.island-time {
+  color: @wv_fg_dim;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.island-btn-toggle { opacity: 0.4; }
+.island-btn-toggle.active { opacity: 1; }
+.island-btn-toggle:hover { opacity: 0.8; }
+.island-btn-toggle.active:hover { opacity: 1; }
