@@ -1,0 +1,15 @@
+{
+  "name": "Wavel Sakura",
+  "colors": {
+    "bg": "#1f1f28",
+    "fg": "#f2d6dc",
+    "fg_dim": "#a07a86",
+    "accent": "#f3a6bd",
+    "accent_hover": "#ff8fb3",
+    "secondary": "#d1a6c8",
+    "highlight": "#3a1f2a",
+    "clock": "#e6b3a1",
+    "good": "#7fbf9b",
+    "warn": "#ff8fb3"
+  }
+}

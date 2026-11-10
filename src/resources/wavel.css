@@ -1,24 +1,17 @@
 window.wavel-bar {
     background: transparent;
-    color: #f2d6dc;
+    color: @wv_fg;
     font-family: "JetBrainsMono Nerd Font", "Noto Sans", sans-serif;
     font-size: 12px;
 }
 
-.left {
-    background: transparent;
-    padding-left: 6px;
-}
-
-.right {
-    background: transparent;
-    padding-right: 6px;
-}
+.left  { background: transparent; padding-left: 6px; }
+.right { background: transparent; padding-right: 6px; }
 
 .module {
-    background: rgba(31, 31, 40, 0.88);
-    color: #f2d6dc;
-    border: 1px solid rgba(243, 166, 189, 0.10);
+    background: alpha(@wv_bg, 0.88);
+    color: @wv_fg;
+    border: 1px solid alpha(@wv_accent, 0.10);
     border-radius: 12px;
     padding: 0 6px;
     margin: 2px 2px;
@@ -26,19 +19,15 @@ window.wavel-bar {
     transition: border-color 200ms ease, background 200ms ease;
 }
 
-.module:hover {
-    border-color: rgba(243, 166, 189, 0.25);
-}
+.module:hover { border-color: alpha(@wv_accent, 0.25); }
 
 /* Workspaces */
 
-.workspaces {
-    padding: 0 2px;
-}
+.workspaces { padding: 0 2px; }
 
 .workspaces button.workspace {
     background: transparent;
-    color: #a07a86;
+    color: @wv_fg_dim;
     border: none;
     box-shadow: none;
     outline: none;
@@ -51,36 +40,34 @@ window.wavel-bar {
 }
 
 .workspaces button.workspace:hover {
-    background: #3a1f2a;
-    color: #ff8fb3;
+    background: @wv_highlight;
+    color: @wv_accent_hover;
 }
 
-.workspaces button.workspace:active {
-    opacity: 0.7;
-}
+.workspaces button.workspace:active { opacity: 0.7; }
 
 .workspaces button.workspace.active {
-    background: #f3a6bd;
-    color: #1f1f28;
+    background: @wv_accent;
+    color: @wv_bg;
     font-weight: bold;
-    box-shadow: 0 0 6px rgba(243, 166, 189, 0.35);
+    box-shadow: 0 0 6px alpha(@wv_accent, 0.35);
 }
 
 .clock {
-    color: #e6b3a1;
+    color: @wv_clock;
     font-weight: bold;
     letter-spacing: 0.3px;
 }
 
 .title {
-    color: #d1a6c8;
+    color: @wv_secondary;
     font-weight: bold;
 }
 
 /* Battery */
 
 .battery {
-    color: #7fbf9b;
+    color: @wv_good;
     font-weight: 500;
 }
 
@@ -95,19 +82,15 @@ window.wavel-bar {
     min-width: 26px;
 }
 
-.battery.low {
-    color: #ff8fb3;
-}
+.battery.low { color: @wv_warn; }
 
 /* Audio */
 
-.audio {
-    padding: 0 2px;
-}
+.audio { padding: 0 2px; }
 
 .audio-button {
     background: transparent;
-    color: #f3a6bd;
+    color: @wv_accent;
     border: none;
     box-shadow: none;
     outline: none;
@@ -119,29 +102,27 @@ window.wavel-bar {
     transition: background 180ms ease, opacity 180ms ease;
 }
 
-.audio-button:hover {
-    background: #3a1f2a;
-}
+.audio-button:hover { background: @wv_highlight; }
 
 .audio-button:active {
-    background: #3a1f2a;
+    background: @wv_highlight;
     opacity: 0.7;
 }
 
 .audio-button:focus-visible {
-    outline: 1px solid #f3a6bd;
+    outline: 1px solid @wv_accent;
     outline-offset: -2px;
 }
 
 .audio-icon {
     font-family: "JetBrainsMono Nerd Font";
     font-size: 13px;
-    color: #f3a6bd;
+    color: @wv_accent;
     transition: opacity 180ms ease;
 }
 
 .audio-volume {
-    color: #d1a6c8;
+    color: @wv_secondary;
     font-size: 11px;
     font-weight: 500;
     font-variant-numeric: tabular-nums;
@@ -150,25 +131,21 @@ window.wavel-bar {
 }
 
 .audio-icon.muted,
-.audio-volume.muted {
-    opacity: 0.45;
-}
+.audio-volume.muted { opacity: 0.45; }
 
 /* Keyboard */
 
-.keyboard {
-    padding: 0 6px;
-}
+.keyboard { padding: 0 6px; }
 
 .keyboard-icon {
     font-family: "JetBrainsMono Nerd Font";
     font-size: 13px;
-    color: #f3a6bd;
+    color: @wv_accent;
     margin-right: 4px;
 }
 
 .keyboard-layout {
-    color: #d1a6c8;
+    color: @wv_secondary;
     font-size: 11px;
     font-weight: 500;
     min-width: 20px;
@@ -176,9 +153,7 @@ window.wavel-bar {
 
 /* Tray */
 
-.tray {
-    padding: 0 4px;
-}
+.tray { padding: 0 4px; }
 
 .tray-item {
     padding: 2px 6px;
@@ -187,23 +162,18 @@ window.wavel-bar {
     transition: background 180ms ease;
 }
 
-.tray-item:hover {
-    background: #3a1f2a;
-}
-
-.tray-item.attention {
-    background: rgba(243, 166, 189, 0.18);
-}
+.tray-item:hover { background: @wv_highlight; }
+.tray-item.attention { background: alpha(@wv_accent, 0.18); }
 
 popover.menu > contents {
-    background: rgba(31, 31, 40, 0.96);
-    border: 1px solid rgba(243, 166, 189, 0.20);
+    background: alpha(@wv_bg, 0.96);
+    border: 1px solid alpha(@wv_accent, 0.20);
     border-radius: 12px;
     padding: 4px;
 }
 
 popover.menu modelbutton {
-    color: #f2d6dc;
+    color: @wv_fg;
     font-size: 12px;
     min-height: 0;
     padding: 4px 10px;
@@ -211,33 +181,30 @@ popover.menu modelbutton {
 }
 
 popover.menu modelbutton:hover {
-    background: #3a1f2a;
-    color: #ff8fb3;
+    background: @wv_highlight;
+    color: @wv_accent_hover;
 }
 
-popover.menu modelbutton:disabled {
-    opacity: 0.4;
-}
+popover.menu modelbutton:disabled { opacity: 0.4; }
 
 popover.menu separator {
-    background: rgba(243, 166, 189, 0.15);
+    background: alpha(@wv_accent, 0.15);
     margin: 3px 4px;
 }
 
 tooltip {
-    background: rgba(31, 31, 40, 0.96);
-    border: 1px solid rgba(243, 166, 189, 0.20);
+    background: alpha(@wv_bg, 0.96);
+    border: 1px solid alpha(@wv_accent, 0.20);
     border-radius: 10px;
 }
 
 tooltip label {
-    color: #f2d6dc;
+    color: @wv_fg;
     font-size: 11px;
     padding: 2px 6px;
 }
 
 /* Island */
-
 
 window.wavel-island {
   background: transparent;
@@ -245,47 +212,43 @@ window.wavel-island {
 }
 
 .island-clock {
-  color: #e6b3a1;
+  color: @wv_clock;
   font-size: 12px;
   font-weight: bold;
   letter-spacing: 0.3px;
 }
 
 .island-cover {
-  background: #3a1f2a;
+  background: @wv_highlight;
   border-radius: 6px;
   overflow: hidden;
 }
-.island-cover-big {
-  border-radius: 14px;
-}
+.island-cover-big { border-radius: 14px; }
 
 .island-compact-text {
-  color: #f2d6dc;
+  color: @wv_fg;
   font-size: 12px;
   font-weight: 500;
 }
 
 .island-title {
-  color: #f2d6dc;
+  color: @wv_fg;
   font-size: 16px;
   font-weight: bold;
 }
 .island-artist {
-  color: #d1a6c8;
+  color: @wv_secondary;
   font-size: 13px;
 }
 
-.island-notif-icon {
-  color: #f3a6bd;
-}
+.island-notif-icon { color: @wv_accent; }
 .island-notif-title {
-  color: #f2d6dc;
+  color: @wv_fg;
   font-size: 14px;
   font-weight: bold;
 }
 .island-notif-body {
-  color: #a07a86;
+  color: @wv_fg_dim;
   font-size: 12px;
 }
 
@@ -298,26 +261,93 @@ window.wavel-island {
   min-width: 40px;
   min-height: 40px;
   border-radius: 999px;
-  color: #f3a6bd;
+  color: @wv_accent;
   transition: background 180ms ease, opacity 180ms ease;
 }
 .island-btn:hover {
-  background: #3a1f2a;
-  color: #ff8fb3;
+  background: @wv_highlight;
+  color: @wv_accent_hover;
 }
-.island-btn:active {
-  opacity: 0.7;
-}
+.island-btn:active { opacity: 0.7; }
 .island-btn-main {
-  background: #f3a6bd;
-  color: #1f1f28;
-  box-shadow: 0 0 8px rgba(243, 166, 189, 0.35);
+  background: @wv_accent;
+  color: @wv_bg;
+  box-shadow: 0 0 8px alpha(@wv_accent, 0.35);
 }
 .island-btn-main:hover {
-  background: #ff8fb3;
-  color: #1f1f28;
+  background: @wv_accent_hover;
+  color: @wv_bg;
 }
 .island-btn-icon {
   font-family: "Symbols Nerd Font", "JetBrainsMono Nerd Font", monospace;
   font-size: 20px;
+}
+
+/* Expanded */
+
+.island-tabbar { padding-top: 4px; }
+
+.island-tab {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  padding: 0;
+  min-width: 36px;
+  min-height: 30px;
+  border-radius: 999px;
+  color: @wv_fg_dim;
+  transition: background 180ms ease, color 180ms ease;
+}
+.island-tab:hover {
+  background: @wv_highlight;
+  color: @wv_accent_hover;
+}
+.island-tab.active {
+  background: @wv_accent;
+  color: @wv_bg;
+}
+.island-tab-icon {
+  font-family: "Symbols Nerd Font", "JetBrainsMono Nerd Font", monospace;
+  font-size: 16px;
+}
+
+.island-page-title {
+  color: @wv_fg;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.island-home-clock {
+  color: @wv_clock;
+  font-size: 36px;
+  font-weight: bold;
+}
+.island-home-date {
+  color: @wv_fg_dim;
+  font-size: 13px;
+}
+.island-home-media {
+  color: @wv_secondary;
+  font-size: 12px;
+}
+
+.island-theme-row {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  padding: 6px 12px;
+  min-height: 0;
+  border-radius: 10px;
+  color: @wv_fg;
+  transition: background 180ms ease, color 180ms ease;
+}
+.island-theme-row:hover {
+  background: @wv_highlight;
+  color: @wv_accent_hover;
+}
+.island-theme-row.current { color: @wv_accent; font-weight: bold; }
+.island-theme-mark {
+  font-family: "Symbols Nerd Font", "JetBrainsMono Nerd Font", monospace;
 }

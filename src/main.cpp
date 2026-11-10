@@ -5,6 +5,7 @@
 #include "modules/keyboard.hpp"
 #include "modules/tray.hpp"
 #include "modules/workspaces.hpp"
+#include "theme.hpp"
 #include <gtk4-layer-shell.h>
 #include <gtkmm.h>
 #include <map>
@@ -72,7 +73,7 @@ public:
 
 protected:
   void on_activate() override {
-    load_css();
+    themes_.init();
     ipc_.connect();
 
     GdkDisplay *display = gdk_display_get_default();
@@ -91,26 +92,12 @@ protected:
   }
 
 private:
-  Glib::RefPtr<Gtk::CssProvider> css_provider_;
+  ThemeManager themes_;
   GListModel *monitors_ = nullptr;
   std::map<GdkMonitor *, std::unique_ptr<WavelWindow>> windows_;
   std::map<GdkMonitor *, std::unique_ptr<IslandWindow>> islands_;
   MprisClient mpris_;
   NotificationServer notifications_;
-
-  void load_css() {
-    css_provider_ = Gtk::CssProvider::create();
-
-    css_provider_->signal_parsing_error().connect(
-        [](const Glib::RefPtr<const Gtk::CssSection> &,
-           const Glib::Error &err) { g_warning("CSS error: %s", err.what()); });
-
-    css_provider_->load_from_resource("/io/github/foksif/wavel/wavel.css");
-
-    Gtk::StyleContext::add_provider_for_display(
-        Gdk::Display::get_default(), css_provider_,
-        GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-  }
 
   bool monitor_present(GdkMonitor *target, guint count) const {
     for (guint i = 0; i < count; ++i) {
@@ -155,8 +142,8 @@ private:
       }
 
       if (!islands_.count(monitor)) {
-        auto island =
-            std::make_unique<IslandWindow>(monitor, mpris_, notifications_);
+        auto island = std::make_unique<IslandWindow>(monitor, mpris_,
+                                                     notifications_, themes_);
         add_window(*island);
         island->present();
         islands_[monitor] = std::move(island);

@@ -1,0 +1,15 @@
+{
+  "name": "Nord",
+  "colors": {
+    "bg": "#2e3440",
+    "fg": "#eceff4",
+    "fg_dim": "#7b88a1",
+    "accent": "#88c0d0",
+    "accent_hover": "#8fbcbb",
+    "secondary": "#b48ead",
+    "highlight": "#3b4252",
+    "clock": "#ebcb8b",
+    "good": "#a3be8c",
+    "warn": "#bf616a"
+  }
+}

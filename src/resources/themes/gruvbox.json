@@ -1,0 +1,15 @@
+{
+  "name": "Gruvbox",
+  "colors": {
+    "bg": "#282828",
+    "fg": "#ebdbb2",
+    "fg_dim": "#928374",
+    "accent": "#fabd2f",
+    "accent_hover": "#fe8019",
+    "secondary": "#d3869b",
+    "highlight": "#3c3836",
+    "clock": "#fe8019",
+    "good": "#b8bb26",
+    "warn": "#fb4934"
+  }
+}

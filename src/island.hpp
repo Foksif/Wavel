@@ -1,9 +1,13 @@
 #pragma once
 
+#include "island/expanded.hpp"
 #include "island/mpris.hpp"
 #include "island/notifications.hpp"
+#include "island/pages/home.hpp"
+#include "island/pages/themes.hpp"
 #include "island/spring.hpp"
 #include "island/state.hpp"
+#include "theme.hpp"
 
 #include <glib/gstdio.h>
 #include <gtk4-layer-shell.h>
@@ -18,8 +22,8 @@
 class IslandWindow : public Gtk::Window {
 public:
   IslandWindow(GdkMonitor *monitor, MprisClient &mpris,
-               NotificationServer &notifications)
-      : mpris_(mpris) {
+               NotificationServer &notifications, ThemeManager &themes)
+      : mpris_(mpris), themes_(themes) {
     add_css_class("wavel-island");
     set_decorated(false);
     set_default_size(island::kMaxWidth + 2 * static_cast<int>(island::kFlare),
@@ -38,6 +42,9 @@ public:
     refresh_media();
     update_clock();
     update_content();
+
+    themes_.signal_changed().connect(
+        sigc::mem_fun(*this, &IslandWindow::on_theme_changed));
 
     mpris_.signal_changed().connect(
         sigc::mem_fun(*this, &IslandWindow::on_media_changed));
@@ -79,6 +86,8 @@ private:
   static constexpr float kPeakWidth = 18.0f; // Peaks: ширина одного зубца, px
   static constexpr float kPeakSpeed = 1.0f;  // Peaks: скорость
 
+  static constexpr bool kExpandedAutoClose = true;
+
   static constexpr int kSmallCover = 22;
   static constexpr int kBigCover = 112;
 
@@ -86,6 +95,7 @@ private:
   static constexpr const char *kNext = "\U000F04AD";
   static constexpr const char *kPlay = "\U000F040A";
   static constexpr const char *kPause = "\U000F03E4";
+  static constexpr const char *kExpand = "\U000F0140"; // chevron-down
 
   void setup_layer_shell(GdkMonitor *monitor) {
     GtkWindow *gw = GTK_WINDOW(gobj());
@@ -110,6 +120,8 @@ private:
       return "notif";
     case island::State::Full:
       return "full";
+    case island::State::Expanded:
+      return "expanded";
     }
     return "idle";
   }
@@ -262,6 +274,12 @@ private:
         kPlay, [this] { mpris_.play_pause(); }, true, &play_icon_));
     controls->append(*make_button(kNext, [this] { mpris_.next(); }));
 
+    auto *expand =
+        make_button(kExpand, [this] { set_state(island::State::Expanded); });
+    expand->set_margin_start(10);
+    expand->set_tooltip_text("Развернуть");
+    controls->append(*expand);
+
     col->append(*full_title_);
     col->append(*full_artist_);
     col->append(*controls);
@@ -269,6 +287,17 @@ private:
     inner->append(*cover_big_);
     inner->append(*col);
     content_.add(*frame(*inner, island::State::Full), "full");
+  }
+
+  // Регистрация Expanded страниц
+  void build_expanded_page() {
+    expanded_ =
+        Gtk::make_managed<ExpandedView>([this] { set_state(base_state()); });
+
+    expanded_->add_page(*Gtk::make_managed<HomePage>(mpris_));
+    expanded_->add_page(*Gtk::make_managed<ThemesPage>(themes_));
+
+    content_.add(*frame(*expanded_, island::State::Expanded), "expanded");
   }
 
   void setup_content() {
@@ -283,12 +312,21 @@ private:
     build_music_page();
     build_notification_page();
     build_full_page();
+    build_expanded_page();
 
     clip_.set_policy(Gtk::PolicyType::EXTERNAL, Gtk::PolicyType::EXTERNAL);
     clip_.set_kinetic_scrolling(false);
     clip_.set_halign(Gtk::Align::CENTER);
     clip_.set_valign(Gtk::Align::START);
     clip_.set_child(content_);
+
+    // Хз полчему но без этого он сходит с сума
+    for (auto adj : {clip_.get_vadjustment(), clip_.get_hadjustment()}) {
+      adj->signal_value_changed().connect([adj] {
+        if (adj->get_value() != 0.0)
+          adj->set_value(0.0);
+      });
+    }
 
     overlay_.set_child(area_);
     overlay_.add_overlay(clip_);
@@ -308,6 +346,11 @@ private:
     overlay_.add_controller(click);
   }
 
+  bool auto_closable() const {
+    return state_ == island::State::Full ||
+           (kExpandedAutoClose && state_ == island::State::Expanded);
+  }
+
   void on_pointer_enter() {
     hovered_ = true;
     leave_timer_.disconnect();
@@ -317,12 +360,12 @@ private:
     hovered_ = false;
     leave_timer_.disconnect();
 
-    if (state_ != island::State::Full)
+    if (!auto_closable())
       return;
 
     leave_timer_ = Glib::signal_timeout().connect(
         [this] {
-          if (!hovered_ && state_ == island::State::Full)
+          if (!hovered_ && auto_closable())
             set_state(base_state());
           return false;
         },
@@ -331,10 +374,21 @@ private:
 
   void on_click() {
     notif_timer_.disconnect();
-    if (state_ == island::State::Full || state_ == island::State::Notification)
-      set_state(base_state());
-    else
+
+    switch (state_) {
+    case island::State::Idle:
+      set_state(island::State::Expanded);
+      break;
+    case island::State::Music:
       set_state(island::State::Full);
+      break;
+    case island::State::Full:
+    case island::State::Notification:
+      set_state(base_state());
+      break;
+    case island::State::Expanded:
+      break;
+    }
   }
 
   island::State base_state() const {
@@ -352,6 +406,9 @@ private:
     if (s != island::State::Notification)
       notif_timer_.disconnect();
 
+    if (s == island::State::Expanded)
+      expanded_->refresh();
+
     content_.set_visible_child(page_name(s));
     start_animation();
   }
@@ -362,8 +419,10 @@ private:
       set_state(base_state());
   }
 
+  void on_theme_changed() { area_.queue_draw(); }
+
   void on_notification(const Notification &n) {
-    if (state_ == island::State::Full)
+    if (state_ == island::State::Full || state_ == island::State::Expanded)
       return;
 
     if (!n.icon.empty() && n.icon[0] == '/')
@@ -690,12 +749,14 @@ private:
     cr->arc_negative(left - s.f, s.f, s.f, 0.0, -M_PI / 2.0);
     cr->close_path();
 
-    cr->set_source_rgb(0.122, 0.122, 0.157); // #1f1f28
+    const GdkRGBA &bg = themes_.rgba("bg");
+    cr->set_source_rgb(bg.red, bg.green, bg.blue);
     cr->fill_preserve();
 
     cairo_set_line_join(cr->cobj(), CAIRO_LINE_JOIN_ROUND);
     cr->set_line_width(1.0);
-    cr->set_source_rgba(0.953, 0.651, 0.741, 0.14); // #f3a6bd
+    const GdkRGBA &ac = themes_.rgba("accent");
+    cr->set_source_rgba(ac.red, ac.green, ac.blue, 0.14);
     cr->stroke();
   }
 
@@ -722,11 +783,14 @@ private:
   }
 
   MprisClient &mpris_;
+  ThemeManager &themes_;
 
   Gtk::Overlay overlay_;
   Gtk::DrawingArea area_;
   Gtk::ScrolledWindow clip_;
   Gtk::Stack content_;
+
+  ExpandedView *expanded_ = nullptr;
 
   Gtk::Label *clock_label_ = nullptr;
   Gtk::Label *compact_label_ = nullptr;
