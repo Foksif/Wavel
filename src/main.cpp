@@ -1,11 +1,14 @@
 #include "ipc/hyprland.hpp"
 #include "island.hpp"
+#include "modules/activewindow.hpp"
 #include "modules/audio.hpp"
 #include "modules/battery.hpp"
 #include "modules/keyboard.hpp"
 #include "modules/tray.hpp"
 #include "modules/workspaces.hpp"
 #include "theme.hpp"
+#include <csignal>
+#include <glib-unix.h>
 #include <gtk4-layer-shell.h>
 #include <gtkmm.h>
 #include <map>
@@ -51,6 +54,7 @@ private:
     right_.add_css_class("right");
 
     left_.append(*Gtk::make_managed<WorkspacesModule>(ipc_));
+    left_.append(*Gtk::make_managed<ActiveWindowModule>(ipc_));
 
     // center_ не испольщуем так как там остров
 
@@ -89,6 +93,14 @@ protected:
     mpris_.start();
     notifications_.start();
     sync_windows();
+
+    g_unix_signal_add(
+        SIGUSR1,
+        +[](gpointer data) -> gboolean {
+          static_cast<WavelApplication *>(data)->ipc_.toggle_noscreenshare();
+          return G_SOURCE_CONTINUE;
+        },
+        this);
   }
 
 private:

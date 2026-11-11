@@ -16,6 +16,7 @@ public:
   void disconnect();
 
   void dispatch_workspace(int id);
+  void toggle_noscreenshare();
   std::string request(const std::string &command);
 
   sigc::signal<void(int, const std::string &)> &signal_workspace_changed() {
@@ -34,12 +35,16 @@ public:
     return active_layout_changed_;
   }
 
+  sigc::signal<void()> &signal_tags_changed() { return tags_changed_; }
+
 private:
   sigc::signal<void(int, const std::string &)> workspace_changed_;
   sigc::signal<void(const std::string &)> active_window_changed_;
   sigc::signal<void(const std::string &, const std::string &)> event_;
   sigc::signal<void(const std::string &, const std::string &)>
       active_layout_changed_;
+
+  sigc::signal<void()> tags_changed_;
 
   int event_fd_ = -1;
   sigc::connection io_conn_;

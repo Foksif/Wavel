@@ -158,3 +158,8 @@ void HyprlandIPC::dispatch_workspace(int id) {
   request("dispatch hl.dsp.focus({ workspace = \"" + std::to_string(id) +
           "\" })");
 }
+
+void HyprlandIPC::toggle_noscreenshare() {
+  request("dispatch hl.dsp.window.tag({ tag = 'noscreenshare' })");
+  tags_changed_.emit();
+}
