@@ -1,13 +1,14 @@
 #include "ipc/hyprland.hpp"
 #include "island.hpp"
+#include "layout.hpp"
 #include "modules/activewindow.hpp"
 #include "modules/audio.hpp"
 #include "modules/battery.hpp"
+#include "modules/brightness.hpp"
 #include "modules/keyboard.hpp"
 #include "modules/tray.hpp"
 #include "modules/workspaces.hpp"
 #include "theme.hpp"
-#include <csignal>
 #include <glib-unix.h>
 #include <gtk4-layer-shell.h>
 #include <gtkmm.h>
@@ -16,17 +17,14 @@
 
 class WavelWindow : public Gtk::ApplicationWindow {
 public:
-  explicit WavelWindow(GdkMonitor *monitor, HyprlandIPC &ipc) : ipc_(ipc) {
+  explicit WavelWindow(GdkMonitor *monitor, HyprlandIPC &ipc,
+                       LayoutManager &layout)
+      : ipc_(ipc), layout_(layout) {
     setup_layer_shell(monitor);
     setup_content();
+    layout_.signal_changed().connect(
+        sigc::mem_fun(*this, &WavelWindow::apply_layout));
   }
-
-private:
-  HyprlandIPC &ipc_;
-  Gtk::CenterBox center_box_;
-  Gtk::Box left_{Gtk::Orientation::HORIZONTAL, 8};
-  Gtk::Box center_{Gtk::Orientation::HORIZONTAL, 8}; // TODO: Вырезать потом
-  Gtk::Box right_{Gtk::Orientation::HORIZONTAL, 8};
 
   void setup_layer_shell(GdkMonitor *monitor) {
     GtkWindow *gw = GTK_WINDOW(gobj());
@@ -47,26 +45,47 @@ private:
     set_decorated(false);
   }
 
+private:
+  HyprlandIPC &ipc_;
+  LayoutManager &layout_;
+  Gtk::CenterBox center_box_;
+  Gtk::Box left_{Gtk::Orientation::HORIZONTAL, 8};
+  Gtk::Box center_{Gtk::Orientation::HORIZONTAL, 8};
+  Gtk::Box right_{Gtk::Orientation::HORIZONTAL, 8};
+  Gtk::Box pool_;
+  std::map<std::string, Gtk::Widget *> modules_;
+
   void setup_content() {
     add_css_class("wavel-bar");
     left_.add_css_class("left");
     center_.add_css_class("center");
     right_.add_css_class("right");
 
-    left_.append(*Gtk::make_managed<WorkspacesModule>(ipc_));
-    left_.append(*Gtk::make_managed<ActiveWindowModule>(ipc_));
-
-    // center_ не испольщуем так как там остров
-
-    right_.append(*Gtk::make_managed<AudioModule>());
-    right_.append(*Gtk::make_managed<KeyboardModule>(ipc_));
-    right_.append(*Gtk::make_managed<BatteryModule>());
-    right_.append(*Gtk::make_managed<TrayModule>());
+    modules_["workspaces"] = Gtk::make_managed<WorkspacesModule>(ipc_);
+    modules_["activewindow"] = Gtk::make_managed<ActiveWindowModule>(ipc_);
+    modules_["audio"] = Gtk::make_managed<AudioModule>();
+    modules_["keyboard"] = Gtk::make_managed<KeyboardModule>(ipc_);
+    modules_["battery"] = Gtk::make_managed<BatteryModule>();
+    modules_["tray"] = Gtk::make_managed<TrayModule>();
+    modules_["brightness"] = Gtk::make_managed<BrightnessModule>();
 
     center_box_.set_start_widget(left_);
     center_box_.set_center_widget(center_);
     center_box_.set_end_widget(right_);
     set_child(center_box_);
+
+    apply_layout();
+  }
+
+  void apply_layout() {
+    for (auto &[id, w] : modules_)
+      reparent(*w, pool_);
+    for (auto &id : layout_.left())
+      if (auto it = modules_.find(id); it != modules_.end())
+        reparent(*it->second, left_);
+    for (auto &id : layout_.right())
+      if (auto it = modules_.find(id); it != modules_.end())
+        reparent(*it->second, right_);
   }
 };
 
@@ -78,6 +97,7 @@ public:
 protected:
   void on_activate() override {
     themes_.init();
+    layout_.init();
     ipc_.connect();
 
     GdkDisplay *display = gdk_display_get_default();
@@ -105,6 +125,7 @@ protected:
 
 private:
   ThemeManager themes_;
+  LayoutManager layout_;
   GListModel *monitors_ = nullptr;
   std::map<GdkMonitor *, std::unique_ptr<WavelWindow>> windows_;
   std::map<GdkMonitor *, std::unique_ptr<IslandWindow>> islands_;
@@ -147,15 +168,15 @@ private:
       auto *monitor = GDK_MONITOR(g_list_model_get_item(monitors_, i));
 
       if (!windows_.count(monitor)) {
-        auto window = std::make_unique<WavelWindow>(monitor, ipc_);
+        auto window = std::make_unique<WavelWindow>(monitor, ipc_, layout_);
         add_window(*window);
         window->present();
         windows_[monitor] = std::move(window);
       }
 
       if (!islands_.count(monitor)) {
-        auto island = std::make_unique<IslandWindow>(monitor, mpris_,
-                                                     notifications_, themes_);
+        auto island = std::make_unique<IslandWindow>(
+            monitor, mpris_, notifications_, themes_, layout_);
         add_window(*island);
         island->present();
         islands_[monitor] = std::move(island);

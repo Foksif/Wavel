@@ -4,26 +4,27 @@
 #include "island/mpris.hpp"
 #include "island/notifications.hpp"
 #include "island/pages/home.hpp"
+#include "island/pages/layout.hpp"
 #include "island/pages/themes.hpp"
 #include "island/spring.hpp"
 #include "island/state.hpp"
 #include "theme.hpp"
+#include <algorithm>
+#include <cmath>
 #include <cstdio>
+#include <functional>
 #include <glib/gstdio.h>
 #include <gtk4-layer-shell.h>
 #include <gtkmm.h>
-
-#include <algorithm>
-#include <cmath>
-#include <functional>
 #include <memory>
 #include <string>
 
 class IslandWindow : public Gtk::Window {
 public:
   IslandWindow(GdkMonitor *monitor, MprisClient &mpris,
-               NotificationServer &notifications, ThemeManager &themes)
-      : mpris_(mpris), themes_(themes) {
+               NotificationServer &notifications, ThemeManager &themes,
+               LayoutManager &layout)
+      : mpris_(mpris), themes_(themes), layout_(layout) {
     add_css_class("wavel-island");
     set_decorated(false);
     set_default_size(island::kMaxWidth + 2 * static_cast<int>(island::kFlare),
@@ -342,6 +343,7 @@ private:
 
     expanded_->add_page(*Gtk::make_managed<HomePage>(mpris_));
     expanded_->add_page(*Gtk::make_managed<ThemesPage>(themes_));
+    expanded_->add_page(*Gtk::make_managed<LayoutPage>(layout_));
 
     content_.add(*frame(*expanded_, island::State::Expanded), "expanded");
   }
@@ -951,6 +953,7 @@ private:
 
   MprisClient &mpris_;
   ThemeManager &themes_;
+  LayoutManager &layout_;
 
   Gtk::Overlay overlay_;
   Gtk::DrawingArea area_;

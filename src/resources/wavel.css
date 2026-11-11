@@ -392,3 +392,62 @@ window.wavel-island {
 .island-btn-toggle.active { opacity: 1; }
 .island-btn-toggle:hover { opacity: 0.8; }
 .island-btn-toggle.active:hover { opacity: 1; }
+
+/* Layout page */
+
+.island-col-title {
+  color: @wv_fg_dim;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.island-chip {
+  background: alpha(@wv_fg, 0.06);
+  border-radius: 10px;
+  padding: 0 3px 0 4px;
+  min-height: 26px;
+  transition: background 180ms ease;
+}
+.island-chip-label { color: @wv_fg; font-size: 12px; }
+.island-chip.off .island-chip-label { color: @wv_fg_dim; }
+.island-chip.off { background: alpha(@wv_fg, 0.03); }
+
+.island-chip-btn {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  padding: 0;
+  min-width: 22px;
+  min-height: 22px;
+  border-radius: 999px;
+  color: @wv_fg_dim;
+  transition: background 180ms ease, color 180ms ease;
+}
+.island-chip-btn:hover {
+  background: @wv_highlight;
+  color: @wv_accent_hover;
+}
+.island-chip-icon {
+  font-family: "Symbols Nerd Font", "JetBrainsMono Nerd Font", monospace;
+  font-size: 13px;
+}
+
+
+/* Brightness */
+
+.brightness { padding: 0 8px; }
+
+.brightness-icon {
+    font-family: "JetBrainsMono Nerd Font";
+    font-size: 13px;
+    color: @wv_accent;
+}
+
+.brightness-value {
+    color: @wv_secondary;
+    font-size: 11px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    min-width: 30px;
+}
