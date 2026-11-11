@@ -451,3 +451,63 @@ window.wavel-island {
     font-variant-numeric: tabular-nums;
     min-width: 30px;
 }
+
+/* Home page */
+
+.island-action {
+  background: alpha(@wv_fg, 0.06);
+  border: none;
+  box-shadow: none;
+  outline: none;
+  padding: 0;
+  min-width: 38px;
+  min-height: 38px;
+  border-radius: 12px;
+  color: @wv_accent;
+  transition: background 180ms ease, color 180ms ease;
+}
+.island-action:hover {
+  background: @wv_highlight;
+  color: @wv_accent_hover;
+}
+.island-action.danger:hover { color: @wv_warn; }
+.island-action:active { opacity: 0.7; }
+.island-action-icon {
+  font-family: "Symbols Nerd Font", "JetBrainsMono Nerd Font", monospace;
+  font-size: 18px;
+}
+
+.island-stats {
+  background: alpha(@wv_fg, 0.05);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+.island-stat-icon {
+  font-family: "Symbols Nerd Font", "JetBrainsMono Nerd Font", monospace;
+  font-size: 18px;
+  color: @wv_accent;
+  min-width: 20px;
+}
+.island-stat-name {
+  color: @wv_fg_dim;
+  font-size: 11px;
+  font-weight: bold;
+}
+.island-stat-value {
+  color: @wv_fg;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.island-stat-bar { min-height: 4px; }
+.island-stat-bar trough {
+  min-height: 4px;
+  border-radius: 2px;
+  background: alpha(@wv_fg, 0.15);
+}
+.island-stat-bar progress {
+  min-height: 4px;
+  border-radius: 2px;
+  background: @wv_accent;
+  transition: background 180ms ease;
+}
+.island-stat-bar.hot progress { background: @wv_warn; }
